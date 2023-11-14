@@ -1,19 +1,5 @@
-import pygame, sys
-
-pygame.init()
-
-SCREEN_WIDTH = 1080
-SCREEN_HEIGHT = 608
 clock = pygame.time.Clock()
 frame_count = 1
-
-#BACKGROUND
-background = pygame.image.load('background/background.png')
-floor = pygame.image.load('background/floor.png')
-
-#SCREEN
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption('SYLVAN ESCAPE')
 
 #PLAYER
 # Tạo danh sách chứa các đối tượng màn hình
@@ -96,8 +82,3 @@ while isGameRunning:
         
     # Điều chỉnh độ trễ để giới hạn tốc độ khung hình
     clock.tick(10)
-
-    screen.blit(background, (0, 0))
-    screen.blit(floor, (-5, 75))
-
-pygame.quit()
