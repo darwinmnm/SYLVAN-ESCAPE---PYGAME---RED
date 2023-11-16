@@ -11,8 +11,8 @@ width, height = 1080, 608
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Sylvan Escape")
 
-background = pygame.image.load("background.png")
-floor = pygame.image.load("floor.png")
+background = pygame.image.load("background/background.png")
+floor = pygame.image.load("background/floor.png")
 
 font = pygame.font.SysFont("SVN-Retron 2000.otf", 40)
 font_title = pygame.font.SysFont("SVN-Retron 2000.otf", 80)
