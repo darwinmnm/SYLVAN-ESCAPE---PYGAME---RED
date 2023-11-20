@@ -1,5 +1,4 @@
 import pygame
-import sys
 from random import randint, choice
 
 class Obstacle(pygame.sprite.Sprite):
@@ -8,55 +7,42 @@ class Obstacle(pygame.sprite.Sprite):
 
         # Tải hình ảnh cho chướng ngại vật
         if obstacle_type == 'snail':
-            self.frames = [pygame.image.load('snail/snail1.png').convert_alpha(),
-                           pygame.image.load('snail/snail2.png').convert_alpha()]
-            y_pos = 435
+            self.frames = [snail1, snail2]
+            self.y_pos = 435
         else:
-            self.frames = [pygame.image.load(f'Eyebeast/Eye Beast Attack{i}.png').convert_alpha() for i in range(1, 9)]
-            y_pos = 210
-
-            # Chiều rộng và chiều cao mong muốn cho eyebeast
-            self.width = 90
-            self.height = 90
-
-            # Thay đổi kích thước hình ảnh
-            for i in range(len(self.frames)):
-                self.frames[i] = pygame.transform.scale(self.frames[i], (self.width, self.height))
+            self.frames = [pygame.transform.scale(image, (90, 90)) for image in eye_beast_images]
+            self.y_pos = 210
 
         # Thiết lập trạng thái hoạt hình ban đầu
         self.animation_index = 0
         self.image = self.frames[int(self.animation_index)]
 
         # Tạo đối tượng rect cho vị trí và phát hiện va chạm
-        self.rect = self.image.get_rect(midbottom=(x, y_pos))
+        self.rect = self.image.get_rect(midbottom=(x, self.y_pos))
 
     def animation_state(self):
-        self.animation_index += 0.1
-        if self.animation_index >= len(self.frames):
-            self.animation_index = 0
+        self.animation_index = (self.animation_index + 0.1) % len(self.frames)
         self.image = self.frames[int(self.animation_index)]
 
-    def update(self):
+    def update(self, speed):
         self.animation_state()
-        self.rect.x -= 6
-
-        # Xóa chướng ngại vật khi nó đi ra khỏi phía bên trái màn hình
+        self.rect.x -= speed
         if self.rect.right < 0:
             self.kill()
+
 # Khởi tạo Pygame
 pygame.init()
 
-SCREEN_WIDTH = 1080
-SCREEN_HEIGHT = 608
-
-#BACKGROUND
-background = pygame.image.load('background/background.png')
-floor = pygame.image.load('background/floor.png')
-
-#SCREEN # Thiết lập cửa sổ trò chơi
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+# Thiết lập cửa sổ trò chơi
+screen = pygame.display.set_mode((1080, 608))
 pygame.display.set_caption('SYLVAN ESCAPE')
 
+# Tải hình ảnh
+background = pygame.image.load('background/background.png')
+floor = pygame.image.load('background/floor.png')
+snail1 = pygame.image.load('snail/snail1.png').convert_alpha()
+snail2 = pygame.image.load('snail/snail2.png').convert_alpha()
+eye_beast_images = [pygame.image.load(f'Eyebeast/Eye Beast Attack{i}.png').convert_alpha() for i in range(1, 9)]
 
 # Tạo nhóm chướng ngại vật
 obstacle_group = pygame.sprite.Group()
@@ -64,34 +50,23 @@ obstacle_group = pygame.sprite.Group()
 # Biến để theo dõi vị trí x của chướng ngại vật trước đó
 last_obstacle_x = 800
 
-# Tạo nhóm chướng ngại vật
-obstacle_group = pygame.sprite.Group()
-
-
-i=0
 # Thêm nhiều chướng ngại vật vào nhóm
-while i<5:
-    obstacle_type = choice(['snai', 'eye_beast'])
-    
-    if obstacle_type == 'snai':
-        obstacle = Obstacle('snail', last_obstacle_x + randint(600,800),200)
-    else:
-        obstacle = Obstacle('eye_beast', last_obstacle_x + randint(600,800), 300)
-    i+=1
+for _ in range(5):
+    obstacle_type = choice(['snail', 'eye_beast'])
+    obstacle = Obstacle(obstacle_type, last_obstacle_x + randint(600,800), 200 if obstacle_type == 'snail' else 300)
     obstacle_group.add(obstacle)
-    
-    # Cập nhật vị trí x của chướng ngại vật trước đó
     last_obstacle_x = obstacle.rect.x
 
 # Vòng lặp trò chơi
 running = True
+speed = 6
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        
+
     # Cập nhật và vẽ các sprite
-    obstacle_group.update()
+    obstacle_group.update(speed)
 
     # Vẽ background và floor trước
     screen.blit(background, (0, 0))
@@ -99,17 +74,22 @@ while running:
 
     # Vẽ các sprite trong nhóm chướng ngại vật
     obstacle_group.draw(screen)
-    # Xóa các chướng ngại vật đã ra khỏi màn hình
-    for obstacle in obstacle_group.copy():
-        if obstacle.rect.x < -obstacle.rect.width:
-            obstacle_group.remove(obstacle)
 
+    # Thêm chướng ngại vật mới nếu cần
+    if len(obstacle_group) < 5:
+        obstacle_type = choice(['snail', 'eye_beast'])
+        obstacle = Obstacle(obstacle_type, last_obstacle_x + randint(600,800), 200 if obstacle_type == 'snail' else 300)
+        obstacle_group.add(obstacle)
+        last_obstacle_x = obstacle.rect.x
 
     # Cập nhật màn hình
     pygame.display.flip()
 
     # Đặt FPS
     pygame.time.Clock().tick(60)
+
+    # Tăng tốc độ theo thời gian
+    speed = min(speed + 0.005, 10)  # Giới hạn tốc độ tối đa là 10
 
 # Kết thúc trò chơi
 pygame.quit()
