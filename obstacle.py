@@ -38,11 +38,11 @@ screen = pygame.display.set_mode((1080, 608))
 pygame.display.set_caption('SYLVAN ESCAPE')
 
 # Tải hình ảnh
-background = pygame.image.load('background/background.png')
-floor = pygame.image.load('background/floor.png')
-snail1 = pygame.image.load('snail/snail1.png').convert_alpha()
-snail2 = pygame.image.load('snail/snail2.png').convert_alpha()
-eye_beast_images = [pygame.image.load(f'Eyebeast/Eye Beast Attack{i}.png').convert_alpha() for i in range(1, 9)]
+background = pygame.image.load('asset/background/background.png')
+floor = pygame.image.load('asset/background/floor.png')
+snail1 = pygame.image.load('asset/snail/snail1.png').convert_alpha()
+snail2 = pygame.image.load('asset/snail/snail2.png').convert_alpha()
+eye_beast_images = [pygame.image.load(f'asset/Eyebeast/Eye Beast Attack{i}.png').convert_alpha() for i in range(1, 9)]
 
 # Tạo nhóm chướng ngại vật
 obstacle_group = pygame.sprite.Group()
